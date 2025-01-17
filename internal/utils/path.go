@@ -1,4 +1,4 @@
-package functions
+package utils
 
 import (
 	"errors"
@@ -35,4 +35,12 @@ func PathPatternToFileName(pattern string) (string, error) {
 	fname.WriteString(".ts")
 
 	return fname.String(), nil
+}
+
+// Converts file names like users.$id.ts to users/:id etc
+func FileNameToHttpPath(name string) string {
+	return "/" + strings.ReplaceAll(
+		strings.ReplaceAll(strings.TrimSuffix(name, ".ts"), "$", ":"),
+		".", "/",
+	)
 }

@@ -16,7 +16,7 @@ type CreateProjectMsg struct {
 	ProjectName string
 }
 
-func CreateProject(m Manifest) tea.Cmd {
+func CreateProject(m ManifestConfig) tea.Cmd {
 	return func() tea.Msg {
 		root, err := InitializeProject(&m)
 		if err != nil {

@@ -166,7 +166,7 @@ func (m CreateProjectModel) appErrorBoundaryView(text string) string {
 	)
 }
 
-func (m CreateProjectModel) getManifestWithDefaults() config.Manifest {
+func (m CreateProjectModel) getManifestWithDefaults() config.ManifestConfig {
 	projectName := m.form.GetString("name")
 	format := m.form.GetString("format")
 	if projectName == "" {
@@ -174,13 +174,13 @@ func (m CreateProjectModel) getManifestWithDefaults() config.Manifest {
 	}
 
 	if format == string(config.ConfigYaml) {
-		return config.NewYAMLConfig(config.Manifest{
+		return config.NewYAMLConfig(config.ManifestConfig{
 			Project: config.Project{
 				Name: projectName,
 			},
 		})
 	}
-	return config.NewJSONConfig(config.Manifest{
+	return config.NewJSONConfig(config.ManifestConfig{
 		Project: config.Project{
 			Name: projectName,
 		},

@@ -1,9 +1,9 @@
-package functions_test
+package utils_test
 
 import (
 	"testing"
 
-	"github.com/protomoks/pmok/internal/functions"
+	"github.com/protomoks/pmok/internal/utils"
 )
 
 func TestPathPatternToFileName(t *testing.T) {
@@ -44,7 +44,7 @@ func TestPathPatternToFileName(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.pattern, func(t *testing.T) {
-			res, err := functions.PathPatternToFileName(c.pattern)
+			res, err := utils.PathPatternToFileName(c.pattern)
 			if getErr(err) != c.wantError {
 				t.Fatalf("expected errors do not match. expected %s, but got %s", c.wantError, getErr(err))
 			}
