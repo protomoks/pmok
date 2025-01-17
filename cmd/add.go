@@ -21,9 +21,6 @@ var (
 	methods []string
 )
 
-//go:embed handlertemplate.ts
-var template []byte
-
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
@@ -31,24 +28,10 @@ var addCmd = &cobra.Command{
 	Long:  `Add a function handler`,
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := config.GetConfig()
+		if conf == nil {
+			log.Fatal("could not find a protomok project")
+		}
 		fmt.Println(conf.Manifest)
-		// dir, err := config.HasProject()
-		// if err != nil || dir == "" {
-		// 	log.Fatal("Unable to add a mock handler. Did you create your project with 'pmok create' yet?")
-		// }
-		// fname, err := utils.PathPatternToFileName(path)
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-		// f, err := os.Create(gopath.Join(conf.GetProjectDir(), config.FunctionsDir, fname))
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-		// defer f.Close()
-		// r := strings.NewReader(string(template))
-		// if _, err := io.Copy(f, r); err != nil {
-		// 	log.Fatal(err)
-		// }
 		if err := add.AddFunction(add.AddFunctionCommand{
 			Name:           name,
 			HttpPath:       path,

@@ -42,13 +42,6 @@ var Manifest = &ManifestConfig{
 	Version: constants.DefaultManifestVersion,
 }
 
-// func (c *ManifestConfig) FunctionDir() string {
-// 	return path.Join(c.rootDir, FunctionsDir)
-// }
-// func (c *ManifestConfig) DataDir() string {
-// 	return path.Join(c.rootDir, DataDir)
-// }
-
 func (c *ManifestConfig) ConfigPath() string {
 	if c.format == ConfigYaml {
 		return filepath.Join(c.rootDir, DeploymentManifestYaml)
@@ -56,14 +49,6 @@ func (c *ManifestConfig) ConfigPath() string {
 	return filepath.Join(c.rootDir, DeploymentManifestJson)
 
 }
-
-// func (c *ManifestConfig) ConfigExists(fs FileSystem) bool {
-// 	exists := true
-// 	if _, err := fs.Stat(c.ConfigPath()); errors.Is(err, os.ErrNotExist) {
-// 		exists = false
-// 	}
-// 	return exists
-// }
 
 func (c *ManifestConfig) Copy() *ManifestConfig {
 	var m ManifestConfig
@@ -102,37 +87,6 @@ func NewYAMLConfig(c ManifestConfig) ManifestConfig {
 	}
 }
 
-// func GetDeploymentManifest(opts ...Option) (*os.File, error) {
-// 	// Load options, applying defaults
-// 	options := DefaultOptions()
-// 	for _, opt := range opts {
-// 		opt(&options)
-// 	}
-// 	// get the filesystem. (Mocked during tests)
-// 	fs := options.FileSystem
-// 	dir, err := fs.Getwd()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	// check if we have a yaml or json deployment manifest
-// 	jsonmf := NewJSONConfig(Manifest)
-// 	yamlmf := NewYAMLConfig(Manifest{})
-// 	jsonmf.rootDir = path.Join(dir, ProtomokDir)
-// 	yamlmf.rootDir = path.Join(dir, ProtomokDir)
-// 	jsonOk := jsonmf.ConfigExists(fs)
-// 	yamlOk := yamlmf.ConfigExists(fs)
-// 	if !jsonOk && !yamlOk {
-// 		return nil, errors.New("deployment manifest not found")
-// 	}
-
-// 	if jsonOk {
-// 		return fs.Open(jsonmf.ConfigPath())
-// 	}
-// 	return fs.Open(yamlmf.ConfigPath())
-
-// }
-
 // HasProject checks whether a protomok directory project
 // exists in the current working directory.
 // Returns the root path of the project. If the project does not exist,
@@ -150,7 +104,7 @@ func HasProject(opts ...Option) (string, error) {
 		return "", err
 	}
 
-	p := path.Join(dir, ProtomokDir)
+	p := filepath.Join(dir, ProtomokDir)
 	if _, err := fs.Stat(p); errors.Is(err, os.ErrNotExist) {
 		return "", nil
 	}
@@ -162,7 +116,7 @@ func ResolveProjectDir(currentDir string) (string, error) {
 	start := currentDir
 
 	for {
-		target := path.Join(start, ProtomokDir)
+		target := filepath.Join(start, ProtomokDir)
 		if info, err := os.Stat(target); err == nil && info.IsDir() {
 			return filepath.Dir(target), nil
 		}
@@ -192,7 +146,7 @@ func InitializeProject(c *ManifestConfig, opts ...Option) (string, error) {
 	}
 
 	alreadyExists := true
-	if _, err := fs.Stat(path.Join(dir, ProtomokDir)); errors.Is(err, os.ErrNotExist) {
+	if _, err := fs.Stat(filepath.Join(dir, ProtomokDir)); errors.Is(err, os.ErrNotExist) {
 		alreadyExists = false
 	}
 	if alreadyExists {

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 	"sync"
 )
@@ -85,7 +84,7 @@ func readManifestFile(dir string) ([]byte, ConfigFormat, error) {
 
 func checkFormat(loc string) ConfigFormat {
 	// check if the json deployment.json exists. If not we probably have a yaml one
-	if _, err := os.Stat(path.Join(loc, DeploymentManifestJson)); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(filepath.Join(loc, DeploymentManifestJson)); errors.Is(err, os.ErrNotExist) {
 		return ConfigYaml
 	}
 	return ConfigJson
