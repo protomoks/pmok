@@ -19,6 +19,7 @@ var (
 	ConfigJson             ConfigFormat = "json"
 	ProtomokDir                         = "protomok"
 	FunctionsDir                        = filepath.Join(ProtomokDir, "functions")
+	MocksDir                            = filepath.Join(ProtomokDir, "mocks")
 	DeploymentManifestJson              = filepath.Join(ProtomokDir, "pmok.json")
 	DeploymentManifestYaml              = filepath.Join(ProtomokDir, "pmok.yaml")
 	ErrAlreadyExists                    = errors.New("local protomok project may already exist")
@@ -158,6 +159,13 @@ func InitializeProject(c *ManifestConfig, opts ...Option) (string, error) {
 
 	return createProtomokFiles(c, fs)
 
+}
+
+func CreateMocksDirIfNotExist(p string) error {
+	if err := os.MkdirAll(filepath.Join(MocksDir, p), 0755); !errors.Is(err, os.ErrExist) {
+		return err
+	}
+	return nil
 }
 
 func createProtomokFiles(c *ManifestConfig, fs FileSystem) (string, error) {

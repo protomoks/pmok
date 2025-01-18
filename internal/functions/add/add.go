@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/protomoks/pmok/internal/config"
@@ -67,7 +66,7 @@ func createFunctionFile(projectRoot, name string) error {
 	if err := os.Mkdir(dir, 0755); err != nil {
 		return err
 	}
-	file, err := os.Create(path.Join(dir, "index.ts"))
+	file, err := os.Create(filepath.Join(dir, "index.ts"))
 	if err != nil {
 		return err
 	}

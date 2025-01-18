@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"os"
+	"os/signal"
 
 	"github.com/spf13/cobra"
 )
@@ -19,6 +20,10 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		ctx, _ := signal.NotifyContext(cmd.Context(), os.Interrupt)
+		cmd.SetContext(ctx)
+	},
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
