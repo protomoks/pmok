@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	Name     string
 	Manifest ManifestConfig
 }
 
@@ -59,6 +60,7 @@ func GetConfig() *Config {
 		manifest.format = format
 		manifest.rootDir = dir
 		cfg = &Config{
+			Name:     ConfigFileName + "." + string(format),
 			Manifest: manifest,
 		}
 	})

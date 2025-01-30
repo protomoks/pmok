@@ -20,8 +20,9 @@ var (
 	ProtomokDir                         = "protomok"
 	FunctionsDir                        = filepath.Join(ProtomokDir, "functions")
 	MocksDir                            = filepath.Join(ProtomokDir, "mocks")
-	DeploymentManifestJson              = filepath.Join(ProtomokDir, "pmok.json")
-	DeploymentManifestYaml              = filepath.Join(ProtomokDir, "pmok.yaml")
+	ConfigFileName                      = "pmok"
+	DeploymentManifestJson              = filepath.Join(ProtomokDir, ConfigFileName+".json")
+	DeploymentManifestYaml              = filepath.Join(ProtomokDir, ConfigFileName+".yaml")
 	ErrAlreadyExists                    = errors.New("local protomok project may already exist")
 )
 
@@ -49,6 +50,10 @@ func (c *ManifestConfig) ConfigPath() string {
 	}
 	return filepath.Join(c.rootDir, DeploymentManifestJson)
 
+}
+
+func (c *ManifestConfig) Encoding() ConfigFormat {
+	return c.format
 }
 
 func (c *ManifestConfig) Copy() *ManifestConfig {

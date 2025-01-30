@@ -1,6 +1,7 @@
-const handler = async (request: Request) => {
+const handler = async (request: Request, params: Record<string, string>) => {
   // add your handler logic here
   return Response.json({ hello: "protomok" });
 };
 
-Deno.serve(handler);
+export default handler;
+// Deno.serve(handler);

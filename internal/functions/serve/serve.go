@@ -16,7 +16,7 @@ import (
 	"github.com/protomoks/pmok/internal/utils/constants"
 )
 
-//go:embed templates/main.ts
+//go:embed templates/local-main.ts
 var mainFunc string
 
 func Run(ctx context.Context, cm docker.ContainerManager) error {
@@ -30,47 +30,57 @@ func Run(ctx context.Context, cm docker.ContainerManager) error {
 		RemoveVolumes: true,
 	})
 	// pull the image
-	if err := cm.PullImage(ctx, constants.EdgeRuntimeImage, os.Stderr); err != nil {
+	if err := cm.PullImage(ctx, constants.DenoImage, os.Stderr); err != nil {
 		return err
 	}
-	fnConfig, err := conf.Manifest.Functions.ToJSON()
-	if err != nil {
-		return err
-	}
+	// fnConfig, err := conf.Manifest.Functions.ToJSON()
+	// if err != nil {
+	// 	return err
+	// }
 	env := []string{
-		fmt.Sprintf("PROTOMOK_FUNCTION_CONFIG=%s", string(fnConfig)),
+		//fmt.Sprintf("PROTOMOK_FUNCTION_CONFIG=%s", string(fnConfig)),
+		fmt.Sprintf("PROTOMOK_CONFIG_ENCODING=%s", string(conf.Manifest.Encoding())),
 	}
 
+	// cmd := []string{
+	// 	"edge-runtime",
+	// 	"start",
+	// 	"--main-service=/root",
+	// 	fmt.Sprintf("--port=%d", 8082),
+	// 	"--verbose",
+	// 	fmt.Sprintf("--policy=%s", "oneshot"),
+	// }
 	cmd := []string{
-		"edge-runtime",
-		"start",
-		"--main-service=/root",
-		fmt.Sprintf("--port=%d", 8082),
-		"--verbose",
-		fmt.Sprintf("--policy=%s", "oneshot"),
+		"deno",
+		"run",
+		"--allow-net",
+		"--allow-read",
+		"--allow-env",
+		"/root/index.ts",
 	}
 	cmdStr := strings.Join(cmd, " ")
 	entryPoint := []string{"sh", "-c", `cat <<'EOF' > /root/index.ts && ` + cmdStr + `
-` + mainFunc + `
+	` + mainFunc + `
 EOF
 `}
 
 	// create the container TODO: Delete existing container if it exists
 	id, err := cm.CreateContainer(ctx,
 		&container.Config{
-			Env:          env,
-			Image:        constants.EdgeRuntimeImage,
+			Env: env,
+			//Image: constants.EdgeRuntimeImage,
+			Image:        constants.DenoImage,
 			Entrypoint:   entryPoint,
-			ExposedPorts: nat.PortSet{nat.Port(fmt.Sprintf("%d/tcp", 8082)): struct{}{}},
+			ExposedPorts: nat.PortSet{nat.Port(fmt.Sprintf("%d/tcp", 8000)): struct{}{}},
 			WorkingDir:   utils.Slashify(conf.GetProjectDir()),
 		},
 		&container.HostConfig{
-			Binds: createBinds(filepath.Join(conf.GetProjectDir(), config.FunctionsDir)),
+			Binds: createBinds(conf),
 			PortBindings: nat.PortMap{
-				nat.Port(fmt.Sprintf("%d/tcp", 8082)): []nat.PortBinding{
+				nat.Port(fmt.Sprintf("%d/tcp", 8000)): []nat.PortBinding{
 					{
 						HostIP:   "0.0.0.0",
-						HostPort: "8082",
+						HostPort: "8000",
 					},
 				},
 			},
@@ -92,10 +102,10 @@ EOF
 	return err
 }
 
-func createBinds(functionDir string) []string {
+func createBinds(conf *config.Config) []string {
 	binds := []string{
 		constants.FunctionsServerContainer + ":" + "/root/.cache/deno:rw",
-		functionDir + ":" + utils.Slashify(functionDir),
+		filepath.Join(conf.GetProjectDir(), config.ProtomokDir) + ":" + utils.Slashify(filepath.Join(conf.GetProjectDir(), config.ProtomokDir)),
 	}
 	return binds
 }
