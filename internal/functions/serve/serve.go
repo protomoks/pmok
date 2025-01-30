@@ -33,23 +33,11 @@ func Run(ctx context.Context, cm docker.ContainerManager) error {
 	if err := cm.PullImage(ctx, constants.DenoImage, os.Stderr); err != nil {
 		return err
 	}
-	// fnConfig, err := conf.Manifest.Functions.ToJSON()
-	// if err != nil {
-	// 	return err
-	// }
+
 	env := []string{
-		//fmt.Sprintf("PROTOMOK_FUNCTION_CONFIG=%s", string(fnConfig)),
 		fmt.Sprintf("PROTOMOK_CONFIG_ENCODING=%s", string(conf.Manifest.Encoding())),
 	}
 
-	// cmd := []string{
-	// 	"edge-runtime",
-	// 	"start",
-	// 	"--main-service=/root",
-	// 	fmt.Sprintf("--port=%d", 8082),
-	// 	"--verbose",
-	// 	fmt.Sprintf("--policy=%s", "oneshot"),
-	// }
 	cmd := []string{
 		"deno",
 		"run",
@@ -99,7 +87,7 @@ EOF
 		fmt.Println(err)
 	}
 
-	return err
+	return cm.StreamLogs(ctx, id, os.Stderr, os.Stdout)
 }
 
 func createBinds(conf *config.Config) []string {

@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
+	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/pkg/errors"
 )
 
@@ -17,6 +18,7 @@ type ContainerManager interface {
 	CreateContainer(ctx context.Context, config *container.Config, hostconfig *container.HostConfig, name string) (string, error)
 	StartContainer(ctx context.Context, id string, options container.StartOptions) error
 	KillAndRemoveContainer(ctx context.Context, id string, options container.RemoveOptions) error
+	StreamLogs(ctx context.Context, id string, stderr, stdout io.Writer) error
 }
 
 type DockerClient interface {
@@ -72,4 +74,23 @@ func (c *containermanager) StartContainer(ctx context.Context, id string, option
 
 func (c *containermanager) KillAndRemoveContainer(ctx context.Context, id string, options container.RemoveOptions) error {
 	return c.cli.ContainerRemove(ctx, id, options)
+}
+
+func (c *containermanager) StreamLogs(ctx context.Context, id string, stderr, stdout io.Writer) error {
+
+	logs, err := c.cli.ContainerLogs(ctx, id, container.LogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+		Follow:     true,
+	})
+	if err != nil {
+		return err
+	}
+	defer logs.Close()
+
+	if _, err := stdcopy.StdCopy(stdout, stderr, logs); err != nil {
+		return errors.Errorf("error streaming logs %s", err)
+	}
+
+	return nil
 }

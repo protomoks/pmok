@@ -2,6 +2,15 @@ import * as posix from "https://deno.land/std/path/posix/mod.ts";
 import { parse } from "jsr:@std/yaml";
 import { walk } from "jsr:@std/fs/walk";
 
+const ASCIIART = `
+
+  ___         _                 _   
+ | _ \\_ _ ___| |_ ___ _ __  ___| |__
+ |  _/ '_/ _ \\  _/ _ \\ '  \\/ _ \\ / /
+ |_| |_| \\___/\\__\\___/_|_|_\\___/_\\_\\
+                                    
+`;
+
 interface Function {
   path: string;
   entrypoint: string;
@@ -79,12 +88,25 @@ class RadixNode {
     }
     return child.get(rest);
   }
+
+  size(): number {
+    let size = 0;
+    if (this.value) {
+      size += Object.keys(this.value)
+        .map((key) => (this.value && this.value[key as Methods]?.length) || 0)
+        .reduce((a, b) => a + b, 0);
+    }
+    for (const key in this.children) {
+      size += this.children[key].size();
+    }
+    return size;
+  }
 }
 
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
 
 class Logger {
-  private logLevel: LogLevel;
+  public readonly logLevel: LogLevel;
 
   constructor() {
     const envLogLevel = Deno.env.get("PMOK_LOG_LEVEL") || "INFO";
@@ -312,7 +334,12 @@ const main = async () => {
       });
     },
     onListen: () => {
-      console.error("Listening on http://127.0.0.1:8000");
+      console.log(ASCIIART);
+      console.log(
+        `Version:\t0.0.1\nAddress:\thttp://127.0.0.1:8000\nStatic Mocks:\t${radixTree.size()}\nFunctions:\t${
+          Object.keys(functionConfig).length
+        }\nLog Level:\t${logger.logLevel}`
+      );
     },
   });
 };
