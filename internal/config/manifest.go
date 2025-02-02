@@ -195,7 +195,7 @@ func createProtomokFiles(c *ManifestConfig, fs FileSystem) (string, error) {
 
 	conf := DeploymentManifestYaml
 	if c.format == ConfigJson {
-		conf = DeploymentManifestYaml
+		conf = DeploymentManifestJson
 	}
 	if err := fs.WriteFile(conf, data, 0755); err != nil {
 		return "", err

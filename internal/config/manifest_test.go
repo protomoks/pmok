@@ -73,7 +73,7 @@ func TestInitializeProjectFiles_YAML(t *testing.T) {
 	confFile := make(map[string]config.ManifestConfig)
 
 	mockFs := MockFileSystem{
-		GetwdFunc: func() (string, error) { return "/tmp", nil },
+		GetwdFunc: func() (string, error) { return "/", nil },
 		StatFunc:  func(name string) (os.FileInfo, error) { return nil, os.ErrNotExist },
 		MkdirFunc: func(name string, perm os.FileMode) error {
 			dirs[name] = 1
@@ -98,18 +98,18 @@ func TestInitializeProjectFiles_YAML(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if _, ok := dirs["/tmp/protomok"]; !ok {
+	if _, ok := dirs["/protomok"]; !ok {
 		t.Fatalf("expected the protomok directory to be created")
 	}
-	if _, ok := dirs["/tmp/protomok/functions"]; !ok {
+	if _, ok := dirs["protomok/functions"]; !ok {
 		t.Fatalf("exptected the protomok/functions directory to be created")
 	}
 
-	if _, ok := confFile["/tmp/protomok/deployment.yaml"]; !ok {
-		t.Fatal("expected the protomok/deployment.yaml file to be created")
+	if _, ok := confFile["protomok/pmok.yaml"]; !ok {
+		t.Fatal("expected the protomok/pmok.yaml file to be created")
 	}
 
-	c := confFile["/tmp/protomok/deployment.yaml"]
+	c := confFile["protomok/pmok.yaml"]
 	if c.Project.Name != conf.Project.Name {
 		t.Fatalf("conf does not match. Expected project name %s, but got %s", conf.Project.Name, c.Project.Name)
 	}
@@ -121,7 +121,7 @@ func TestInitializeProjectFiles_JSON(t *testing.T) {
 	confFile := make(map[string]config.ManifestConfig)
 
 	mockFs := MockFileSystem{
-		GetwdFunc: func() (string, error) { return "/tmp", nil },
+		GetwdFunc: func() (string, error) { return "/", nil },
 		StatFunc:  func(name string) (os.FileInfo, error) { return nil, os.ErrNotExist },
 		MkdirFunc: func(name string, perm os.FileMode) error {
 			dirs[name] = 1
@@ -146,18 +146,18 @@ func TestInitializeProjectFiles_JSON(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if _, ok := dirs["/tmp/protomok"]; !ok {
+	if _, ok := dirs["/protomok"]; !ok {
 		t.Fatalf("expected the protomok directory to be created")
 	}
-	if _, ok := dirs["/tmp/protomok/functions"]; !ok {
+	if _, ok := dirs["protomok/functions"]; !ok {
 		t.Fatalf("exptected the protomok/functions directory to be created")
 	}
 
-	if _, ok := confFile["/tmp/protomok/deployment.json"]; !ok {
-		t.Fatal("expected the protomok/deployment.json file to be created")
+	if _, ok := confFile["protomok/pmok.json"]; !ok {
+		t.Fatal("expected the protomok/pmok.json file to be created")
 	}
 
-	c := confFile["/tmp/protomok/deployment.json"]
+	c := confFile["protomok/pmok.json"]
 	if c.Project.Name != conf.Project.Name {
 		t.Fatalf("conf does not match. Expected project name %s, but got %s", conf.Project.Name, c.Project.Name)
 	}

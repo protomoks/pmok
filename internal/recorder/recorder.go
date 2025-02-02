@@ -103,7 +103,7 @@ func (rec *recorder) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res, err := client.Do(proxyr)
 	if err != nil {
-		fmt.Printf("Error when receiving response for %s . Error %w\n", url, err)
+		fmt.Printf("Error when receiving response for %s . Error %s\n", url, err)
 		return
 	}
 
