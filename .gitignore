@@ -1,4 +1,5 @@
 .DS_Store
 pmok
 protomok
-.vscode
+.vscode# Added by goreleaser init:
+dist/

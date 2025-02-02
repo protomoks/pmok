@@ -7,3 +7,5 @@ const (
 	DenoImage                = "denoland/deno:2.0.2"
 	RecorderDefaultPort      = 9999
 )
+
+var Version = "dev" // default value. Will be overwritten by ldflags
